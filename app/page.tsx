@@ -1,12 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [departure, setDeparture] = useState("");
   const [arrival, setArrival] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
   const [date, setDate] = useState("");
+
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({ departure, arrival, flightNumber, date });
+    router.push("/w/test123");
+  };
 
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-8 px-4 py-16">
@@ -20,7 +29,7 @@ export default function Home() {
         ✈️ GIF placeholder
       </div>
 
-      <form className="w-full max-w-[400px] flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="w-full max-w-[400px] flex flex-col gap-4">
         <input
           type="text"
           placeholder="Departing airport"
