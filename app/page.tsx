@@ -8,13 +8,32 @@ export default function Home() {
   const [arrival, setArrival] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
   const [date, setDate] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ departure, arrival, flightNumber, date });
-    router.push("/w/test123");
+    setError("");
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/watch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ departure, arrival, flightNumber, date }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to create watch link");
+      }
+      const data = await response.json();
+      router.push("/w/" + data.id);
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -59,10 +78,14 @@ export default function Home() {
         />
         <button
           type="submit"
-          className="w-full bg-white text-black rounded-lg py-3 font-semibold hover:bg-zinc-200 transition-colors"
+          disabled={isSubmitting}
+          className="w-full bg-white text-black rounded-lg py-3 font-semibold hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Create Watch Link
+          {isSubmitting ? "Creating..." : "Create Watch Link"}
         </button>
+        {error && (
+          <p className="text-red-400 text-sm text-center">{error}</p>
+        )}
       </form>
     </div>
   );
