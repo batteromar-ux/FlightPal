@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -10,8 +10,16 @@ export default function Home() {
   const [date, setDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [showLanding, setShowLanding] = useState(true);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowLanding((prev) => !prev);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,8 +52,17 @@ export default function Home() {
         Share a link. Watch a flight. No signup.
       </p>
 
-      <div className="w-[400px] h-[200px] bg-zinc-900 rounded-xl flex items-center justify-center text-zinc-600">
-        ✈️ GIF placeholder
+      <div className="relative w-[400px] h-[200px] rounded-xl overflow-hidden">
+        <img
+          src="/landing.jpg"
+          alt="Airplane landing"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${showLanding ? "opacity-100" : "opacity-0"}`}
+        />
+        <img
+          src="/takeoff.jpg"
+          alt="Airplane taking off"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${showLanding ? "opacity-0" : "opacity-100"}`}
+        />
       </div>
 
       <form onSubmit={handleSubmit} className="w-full max-w-[400px] flex flex-col gap-4">
