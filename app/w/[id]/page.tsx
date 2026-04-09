@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import CopyLinkButton from "./CopyLinkButton";
 
 export default async function WatchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -25,6 +26,7 @@ export default async function WatchPage({ params }: { params: Promise<{ id: stri
         <p className="text-zinc-300 text-lg">{flight.origin as string} → {flight.destination as string}</p>
         <p className="text-zinc-500 text-sm mt-2">Date: {flight.date as string}</p>
       </div>
+      <CopyLinkButton />
     </main>
   );
 }
