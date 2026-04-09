@@ -1,6 +1,48 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import CopyLinkButton from "./CopyLinkButton";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+
+  const result = await db.execute({
+    sql: "SELECT * FROM flights WHERE id = ?",
+    args: [id],
+  });
+
+  if (result.rows.length === 0) {
+    return { title: "Flight not found — FlightPal" };
+  }
+
+  const flight = result.rows[0];
+  const flightNumber = flight.flight_number as string;
+  const origin = flight.origin as string;
+  const destination = flight.destination as string;
+
+  const title = `${origin} → ${destination} · ${flightNumber} — FlightPal`;
+  const description = "Follow this flight live on FlightPal. No signup required.";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      siteName: "FlightPal",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 export default async function WatchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
