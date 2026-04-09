@@ -23,13 +23,13 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ departure, arrival, flightNumber, date }),
       });
-      if (!response.ok) {
-        throw new Error("Failed to create watch link");
-      }
       const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to create watch link");
+      }
       router.push("/w/" + data.id);
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      setError(err instanceof Error ? err.message : "Network error. Please try again.");
       console.error(err);
     } finally {
       setIsSubmitting(false);
